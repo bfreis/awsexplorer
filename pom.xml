@@ -1,0 +1,209 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.brunoreis.awsexplorer</groupId>
+  <artifactId>awsexplorer</artifactId>
+  <version>0.1</version>
+
+  <packaging>war</packaging>
+
+  <name>AWS Explorer</name>
+
+  <inceptionYear>2013</inceptionYear>
+
+  <organization>
+    <name>Bruno França dos Reis, bfreis@gmail.com</name>
+    <url>https://github.com/bfreis/awsexplorer</url>
+  </organization>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <version>${version.guice}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${version.guava}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>${version.jsr305}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk</artifactId>
+      <version>${version.aws-java-sdk}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxrs</artifactId>
+      <version>${version.resteasy}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-guice</artifactId>
+      <version>${version.resteasy}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jackson-provider</artifactId>
+      <version>${version.resteasy}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-lgpl</artifactId>
+      <version>1.9.13</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>${version.servlet-api}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${version.junit}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <properties>
+    <version.resteasy>3.0.2.Final</version.resteasy>
+    <version.guice>3.0</version.guice>
+    <version.guava>14.0.1</version.guava>
+    <version.jsr305>2.0.1</version.jsr305>
+    <version.aws-java-sdk>1.5.2</version.aws-java-sdk>
+    <version.servlet-api>3.0.1</version.servlet-api>
+    <version.junit>4.11</version.junit>
+
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <tmp.webapp>${project.build.directory}/tmp/webapp</tmp.webapp>
+    <tmp.webapp.built>${project.build.directory}/tmp/webapp-built</tmp.webapp.built>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.6</version>
+        <executions>
+          <execution>
+            <id>prepare-tmp-webapp</id>
+            <phase>prepare-package</phase>
+            <goals><goal>copy-resources</goal></goals>
+            <configuration>
+              <outputDirectory>${tmp.webapp}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/webapp</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.3</version>
+
+        <configuration>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+          <useCache>true</useCache>
+        </configuration>
+
+        <executions>
+          <execution>
+            <id>prepare-exploded</id>
+            <goals>
+              <goal>exploded</goal>
+            </goals>
+            <phase>prepare-package</phase>
+          </execution>
+          <execution>
+            <id>default-war</id>
+            <goals>
+              <goal>war</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <webResources>
+                <resource>
+                  <directory>${tmp.webapp.built}</directory>
+                  <targetPath>/</targetPath>
+                </resource>
+                <resource>
+                  <directory>src/main/ebextensions</directory>
+                  <targetPath>.ebextensions</targetPath>
+                  <filtering>true</filtering>
+                </resource>
+              </webResources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>au.com.clearboxsystems.maven.plugins.nodejs</groupId>
+        <artifactId>nodejs-maven-plugin</artifactId>
+        <version>1.2.2</version>
+        <executions>
+          <execution>
+            <id>compile-js</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <tasks>
+            <nodeJsTask>
+              <workingDirectory>${tmp.webapp}</workingDirectory>
+              <name>${basedir}/build/r-2.1.8.js</name>
+              <arguments>
+                <argument>-o</argument>
+                <argument>baseUrl=.</argument>
+                <argument>mainConfigFile=config.js</argument>
+                <argument>dir=${tmp.webapp.built}</argument>
+              </arguments>
+            </nodeJsTask>
+          </tasks>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+        <version>2.1</version>
+        <configuration>
+          <path>/</path>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
