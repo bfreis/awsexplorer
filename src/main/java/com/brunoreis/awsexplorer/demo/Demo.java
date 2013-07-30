@@ -26,6 +26,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
+import com.brunoreis.awsexplorer.VersionProvider;
 import com.google.common.collect.ImmutableList;
 import com.google.common.reflect.Invokable;
 import com.google.common.reflect.Parameter;
@@ -36,7 +37,7 @@ public abstract class Demo {
   public String getTitle() { return "Unknown"; }
   public String getDescription() { return "No description."; }
   public String getDemoPath() { return getClass().getSimpleName().toLowerCase(); }
-  public String getGithubLink() { return "https://github.com/bfreis/awsexplorer/blob/master/src/main/java/" + getClass().getName().replaceAll("\\.", "/") + ".java"; }
+  public String getGithubLink() { return "https://github.com/bfreis/awsexplorer/blob/" + VersionProvider.getVersion() + "/src/main/java/" + getClass().getName().replaceAll("\\.", "/") + ".java"; }
 
   @GET @Produces("application/json")
   public final Demo info() { return this; }
