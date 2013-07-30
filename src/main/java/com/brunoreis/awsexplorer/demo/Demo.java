@@ -36,6 +36,7 @@ public abstract class Demo {
   public String getTitle() { return "Unknown"; }
   public String getDescription() { return "No description."; }
   public String getDemoPath() { return getClass().getSimpleName().toLowerCase(); }
+  public String getGithubLink() { return "https://github.com/bfreis/awsexplorer/blob/master/src/main/java/" + getClass().getName().replaceAll("\\.", "/") + ".java"; }
 
   @GET @Produces("application/json")
   public final Demo info() { return this; }
