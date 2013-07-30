@@ -29,10 +29,10 @@ require.config({
     bootstrap: {deps: ['jquery']}
   },
   paths: {
-    jquery: 'libs/jquery-2.0.3',
-    underscore: 'libs/lodash-1.3.1',
-    backbone: 'libs/backbone-1.0.0',
-    bootstrap: 'libs/bootstrap-3.0.0-rc1',
+    jquery: ['//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min', 'libs/jquery-2.0.3'],
+    underscore: ['//cdnjs.cloudflare.com/ajax/libs/lodash.js/1.3.1/lodash.min', 'libs/lodash-1.3.1'],
+    backbone: ['//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min', 'libs/backbone-1.0.0'],
+    bootstrap: ['//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/js/bootstrap.min', 'libs/bootstrap-3.0.0-rc1'],
 
     'jquery-serialize-object': 'libs/jquery-serialize-object',
 

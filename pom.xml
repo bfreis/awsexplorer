@@ -187,6 +187,10 @@
                 <argument>baseUrl=.</argument>
                 <argument>mainConfigFile=config.js</argument>
                 <argument>dir=${tmp.webapp.built}</argument>
+                <argument>paths.jquery=empty:</argument>
+                <argument>paths.bootstrap=empty:</argument>
+                <argument>paths.backbone=empty:</argument>
+                <argument>paths.underscore=empty:</argument>
               </arguments>
             </nodeJsTask>
           </tasks>
