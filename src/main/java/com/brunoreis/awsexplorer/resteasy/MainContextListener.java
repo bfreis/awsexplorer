@@ -16,43 +16,31 @@
  */
 package com.brunoreis.awsexplorer.resteasy;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.annotation.WebListener;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.AmazonSQSClient;
-import com.brunoreis.awsexplorer.demo.DemoGroups;
-import com.google.inject.AbstractModule;
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import com.google.inject.Singleton;
 import com.google.inject.Stage;
 import org.jboss.resteasy.plugins.guice.GuiceResteasyBootstrapServletContextListener;
-import org.jboss.resteasy.plugins.providers.jackson.JacksonJsonpInterceptor;
 
 @WebListener
 public class MainContextListener extends GuiceResteasyBootstrapServletContextListener {
-  @Override protected void withInjector(final Injector injector) {}
+  private final DemoModule demoModule = new DemoModule();
+
+  @Override protected void withInjector(final Injector injector) {
+    demoModule.injectInjector(injector);
+  }
 
   @Override protected Stage getStage(final ServletContext context) {
     return Stage.PRODUCTION;
   }
 
   @Override protected List<Module> getModules(final ServletContext context) {
-    final ArrayList<Module> modules = new ArrayList<>();
-    modules.add(new AbstractModule() {
-      @Override protected void configure() {
-        bind(DemoGroups.class);
-        bind(AmazonS3.class).to(AmazonS3Client.class).in(Singleton.class);
-        bind(AmazonSQS.class).to(AmazonSQSClient.class).in(Singleton.class);
-        bind(JacksonJsonpInterceptor.class); // just to initialize the class
-      }
-    });
-    return modules;
+    return ImmutableList.<Module>of(demoModule);
   }
 }
+
