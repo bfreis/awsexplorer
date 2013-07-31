@@ -15,6 +15,7 @@
 define ['backbone'],
 (Backbone) ->
   class ContentView extends Backbone.View
+    initialize: () -> @$el.empty()
     subview: null
     render: () ->
       @$el.append(@subview.render().$el)
